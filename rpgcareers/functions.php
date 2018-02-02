@@ -124,17 +124,25 @@ add_filter('wp_die_handler', 'rpgCareers_custom_error_handler');
 //TODO: NEED ABILITY TO HIDE BACK END MENU ITEMS?
 function rpgCareers_amend_admin_menu() {
     global $menu;
-	//EXAMPLE ARRAY...
-	$restricted = array('Comments','Posts');
-    end ($menu);
 
-    while (prev($menu)){
-		$value = trim(explode('<',$menu[key($menu)][0])[0]);
+	if(is_admin()){
+		if(!isset($menu)) return;
+		if(count($menu)===0) return;
 
-		if(in_array($value,$restricted)) {
-			unset($menu[key($menu)]);
+		//EXAMPLE ARRAY...
+		$restricted = array('Comments','Posts');
+		end ($menu);
+
+		while (prev($menu)){
+			$value = array_filter(explode('<',$menu[key($menu)][0]), 'strlen');
+			if(count($value)>0){
+				$value = trim($value[0]);
+				if(in_array($value,$restricted)) {
+					unset($menu[key($menu)]);
+				}
+			}
 		}
-    }
+	}
 }
 add_action('admin_menu', 'rpgCareers_amend_admin_menu');
 
